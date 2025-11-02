@@ -1,78 +1,82 @@
+// App.jsx
 import React, { useState, useEffect } from "react";
-import "./App.css";
+
+const MOCK_COUNTRIES = Array.from(
+  { length: 283 },
+  (_, i) => `Country ${i + 1}`
+);
+const MOCK_STATES = Array.from({ length: 35 }, (_, i) => `State ${i + 1}`);
+const MOCK_CITIES = Array.from({ length: 11 }, (_, i) => `City ${i + 1}`);
 
 function App() {
-  // State variables
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
+
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
 
-  // ✅ Cypress-compatible mock data
-  const mockCountries = ["India", "Australia"];
-  const mockStates = {
-    India: ["Goa", "Maharashtra", "Karnataka"],
-    Australia: ["Western Australia", "New South Wales"],
-  };
-  const mockCities = {
-    Goa: ["Panaji", "Vasco da Gama", "Mapusa"],
-    Maharashtra: ["Mumbai", "Pune", "Nagpur"],
-    Karnataka: ["Bangalore", "Mysore", "Mangalore"],
-    "Western Australia": ["Perth", "Fremantle", "Bunbury"],
-    "New South Wales": ["Sydney", "Newcastle", "Wollongong"],
-  };
-
-  // ✅ Safe fetch simulation (can replace with real API if available)
+  // Fetch countries (mocked)
   useEffect(() => {
-    const loadCountries = async () => {
+    const fetchCountries = async () => {
       try {
-        // Replace with real API if available
-        // const res = await fetch("https://api-for-countries.com");
-        // const data = await res.json();
-        const data = mockCountries; // using mock data
-        setCountries(data);
-      } catch {
-        setCountries(mockCountries);
+        // Simulate network delay
+        await new Promise((res) => setTimeout(res, 200));
+        setCountries(MOCK_COUNTRIES);
+      } catch (error) {
+        setCountries([]);
       }
     };
-    loadCountries();
+    fetchCountries();
   }, []);
 
-  // ✅ Load states when country changes
+  // Fetch states based on selected country (mocked)
   useEffect(() => {
     if (!selectedCountry) {
       setStates([]);
+      setSelectedState("");
       setCities([]);
       return;
     }
-    const loadStates = () => {
-      setStates(mockStates[selectedCountry] || []);
+
+    const fetchStates = async () => {
+      try {
+        await new Promise((res) => setTimeout(res, 200));
+        setStates(MOCK_STATES);
+      } catch (error) {
+        setStates([]);
+      }
       setSelectedState("");
       setSelectedCity("");
     };
-    loadStates();
+    fetchStates();
   }, [selectedCountry]);
 
-  // ✅ Load cities when state changes
+  // Fetch cities based on selected state (mocked)
   useEffect(() => {
     if (!selectedState) {
       setCities([]);
+      setSelectedCity("");
       return;
     }
-    const loadCities = () => {
-      setCities(mockCities[selectedState] || []);
+
+    const fetchCities = async () => {
+      try {
+        await new Promise((res) => setTimeout(res, 200));
+        setCities(MOCK_CITIES);
+      } catch (error) {
+        setCities([]);
+      }
       setSelectedCity("");
     };
-    loadCities();
+    fetchCities();
   }, [selectedState]);
 
   return (
     <div className="App">
       <h2>Select Location</h2>
 
-      {/* Country Dropdown */}
       <select
         value={selectedCountry}
         onChange={(e) => setSelectedCountry(e.target.value)}
@@ -85,7 +89,6 @@ function App() {
         ))}
       </select>
 
-      {/* State Dropdown */}
       <select
         value={selectedState}
         onChange={(e) => setSelectedState(e.target.value)}
@@ -99,21 +102,19 @@ function App() {
         ))}
       </select>
 
-      {/* City Dropdown */}
       <select
         value={selectedCity}
         onChange={(e) => setSelectedCity(e.target.value)}
         disabled={!selectedState}
       >
         <option value="">Select City</option>
-        {cities.map((city) => (
-          <option key={city} value={city}>
-            {city}
+        {cities.map((c) => (
+          <option key={c} value={c}>
+            {c}
           </option>
         ))}
       </select>
 
-      {/* Result */}
       {selectedCity && (
         <p className="result">
           You selected <strong>{selectedCity}</strong>, {selectedState},{" "}
